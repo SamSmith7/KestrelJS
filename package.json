@@ -1,0 +1,14 @@
+{
+  "name": "webserver",
+  "version": "0.0.0",
+  "description": "Stream Based Webserver",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sam Smith",
+  "license": "ISC",
+  "dependencies": {
+    "rxjs": "^5.0.0-rc.4"
+  }
+}
