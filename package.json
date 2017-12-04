@@ -9,6 +9,7 @@
   "author": "Sam Smith",
   "license": "ISC",
   "dependencies": {
+    "lodash": "^4.17.4",
     "rxjs": "^5.5.0"
   }
 }

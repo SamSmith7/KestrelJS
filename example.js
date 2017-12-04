@@ -4,11 +4,8 @@ const createServer = require('./index.js')
 const port = 3000
 const app = createServer(port)
 
-console.log(app.get('/').send)
-
 app.get('/').send()
 
-console.log(app)
 // Server$.do(({request, response}) => {
 //     console.log(request.url)
 //     response.end('Hello Node.js Server!')

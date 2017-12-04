@@ -1,35 +1,37 @@
 const http = require('http')
+const _ = require('lodash')
 const Rx = require('rxjs/Rx')
 
 
 class KestrelObservable extends Rx.Observable {
 
+    constructor() {
+
+        super()
+        this.send.bind(this)
+    }
+
+    static create() {
+        const observable = new KestrelObservable();
+        observable.source = Rx.Observable.create(...arguments);
+        return observable;
+    }
+
     lift(operator) {
         const observable = new KestrelObservable() //<-- important part here
         observable.source = this
         observable.operator = operator
-        observable.__internal = {
-            request: {},
-            response: {}
-        }
         return observable
     }
 
     send() {
 
-        return SendSubscriber()
+        const source = this
+        return source.subscribe(({response}) => {
+
+            response.end('Hello Node.js Server!')
+        })
     }
-}
-
-const SendSubscriber = () => {
-
-    const source = this
-
-    return source.subscribe(() => {
-
-        const { response } = source.__internal
-        response.end('Hello Node.js Server!')
-    })
 }
 
 const findMatch = urlToTest => incomingUrl => {
@@ -39,7 +41,7 @@ const findMatch = urlToTest => incomingUrl => {
 }
 
 const create = (port) => {
-    console.log(KestrelObservable)
+
     const handler$ = KestrelObservable
         .create(observer => {
 
