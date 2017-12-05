@@ -1,5 +1,6 @@
 const http = require('http')
 const _ = require('lodash')
+const pathToRegexp = require('path-to-regexp')
 const Rx = require('rxjs/Rx')
 
 
@@ -20,7 +21,7 @@ class KestrelObservable extends Rx.Observable {
     }
 
     lift(operator) {
-        const observable = new KestrelObservable() //<-- important part here
+        const observable = new KestrelObservable()
         observable.source = this
         observable.operator = operator
         return observable
@@ -36,12 +37,6 @@ class KestrelObservable extends Rx.Observable {
     }
 }
 
-const findMatch = urlToTest => incomingUrl => {
-
-    // Url Matcher
-    return true
-}
-
 const create = (port) => {
 
     const handler$ = KestrelObservable
@@ -54,22 +49,28 @@ const create = (port) => {
                 return
             })
         })
+        .share()
 
     const urls = []
 
-    const urlMatch = (urlToMatch, method) => ({request}) => {
+    const urlMatch = (index, method) => ({request}) => {
 
         const incomingUrl = request.url
-        const firstMatch = _.findIndex(urls, findMatch(incomingUrl))
 
-        return method === request.method
-            && urlToMatch === urls[firstMatch]
+        const firstMatch = _.findIndex(urls, urlTest => {
+
+            return !_.isNull(urlTest.exec(incomingUrl))
+        })
+
+        return method === request.method && firstMatch === (index - 1)
     }
 
     const get = (url, options) => {
 
-        urls.push(url)
-        return handler$.filter(urlMatch(url, 'GET'))
+        urls.push(pathToRegexp(url))
+        const index = _.size(urls)
+
+        return handler$.filter(urlMatch(index, 'GET'))
     }
 
     return {
