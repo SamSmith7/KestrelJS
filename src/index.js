@@ -21,7 +21,7 @@ const create = (port) => {
 
     const urls = []
 
-    const urlMatch = (index, method) => ({request}) => {
+    const urlMatch = (index, method) => (request) => {
 
         const incomingUrl = request.url
 
@@ -38,7 +38,13 @@ const create = (port) => {
         urls.push(pathToRegexp(url))
         const index = _.size(urls)
 
-        return handler$.filter(urlMatch(index, 'GET'))
+        return handler$
+            .map(({request, response}) => ({
+                request,
+                response,
+                urlSections: urlMatch(index, 'GET')(request)
+            }))
+            .filter(({urlSections}) => urlSections)
     }
 
     return {
