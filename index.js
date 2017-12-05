@@ -3,6 +3,8 @@ const _ = require('lodash')
 const Rx = require('rxjs/Rx')
 
 
+const DEFAULT_MESSAGE = 'Hello Node.js Server!'
+
 class KestrelObservable extends Rx.Observable {
 
     constructor() {
@@ -24,12 +26,12 @@ class KestrelObservable extends Rx.Observable {
         return observable
     }
 
-    send() {
+    send(msg = DEFAULT_MESSAGE) {
 
         const source = this
         return source.subscribe(({response}) => {
 
-            response.end('Hello Node.js Server!')
+            response.end(msg)
         })
     }
 }

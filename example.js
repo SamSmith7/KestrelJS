@@ -4,7 +4,7 @@ const createServer = require('./index.js')
 const port = 3000
 const app = createServer(port)
 
-app.get('/').send()
+app.get('/').send('Some cool new RXJS api shizz')
 
 // Server$.do(({request, response}) => {
 //     console.log(request.url)
