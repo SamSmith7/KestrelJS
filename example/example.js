@@ -1,4 +1,4 @@
-const createServer = require('./index.js')
+const createServer = require('../src/index.js')
 
 
 const port = 3000
