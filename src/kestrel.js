@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const Rx = require('rxjs/Rx')
 
 
@@ -27,9 +28,38 @@ class KestrelObservable extends Rx.Observable {
     send(msg = DEFAULT_MESSAGE) {
 
         const source = this
-        return source.subscribe(({response}) => {
+        return source.subscribe(args => {
 
-            response.end(msg)
+            const message = _.isFunction(msg)
+                ? msg(args)
+                : msg
+
+            args.response.end(message)
+        })
+    }
+
+    setStatus(status) {
+
+        return KestrelObservable.create(subscriber => {
+
+            const source = this
+
+            const subscription = source.subscribe(args => {
+
+                args.response.statusCode = _.isFunction(status)
+                    ? status(args)
+                    : status
+
+                try {
+                    subscriber.next(args)
+                } catch(err) {
+                    subscriber.error(err)
+                }
+            },
+            err => subscriber.error(err),
+            () => subscriber.complete())
+
+            return subscription;
         })
     }
 }
